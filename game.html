@@ -6,10 +6,41 @@
     <style>
       body { margin: 0; }
     </style>
-    <script type="module" crossorigin src="/acg-wu-xiao/assets/about-DrDNJPhb.js"></script>
-    <link rel="modulepreload" crossorigin href="/acg-wu-xiao/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <script type="module" crossorigin src="/assets/about-SIttszAK.js"></script>
   </head>
   <body>
+    <!-- 添加背景音乐 -->
+    <audio id="gameBackgroundMusic" loop autoplay>
+      <source src="./audio/Game Background.mp3" type="audio/mp3" />
+      Your browser does not support the audio element.
+    </audio>
+
 
+    <script>
+      // 获取背景音乐元素
+      const backgroundMusic = document.getElementById('gameBackgroundMusic');
+
+      // 设置音量 (0.0 - 1.0, 例如 0.5 是 50%)
+      backgroundMusic.volume = 0.3;
+
+      // 检查是否需要从其他页面恢复背景音乐的播放
+      const isMusicPlaying = localStorage.getItem('gameMusicPlaying') === 'true';
+
+      if (isMusicPlaying) {
+        backgroundMusic.play();
+      } else {
+        localStorage.setItem('gameMusicPlaying', 'true');
+        backgroundMusic.play();
+      }
+
+      // 在页面关闭或刷新时保存音乐状态
+      window.addEventListener('beforeunload', () => {
+        if (!backgroundMusic.paused) {
+          localStorage.setItem('gameMusicPlaying', 'true');
+        } else {
+          localStorage.setItem('gameMusicPlaying', 'false');
+        }
+      });
+    </script>
   </body>
 </html>

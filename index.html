@@ -1,67 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Pathcrafters: A Journey Together</title>
-    <style>
-      body {
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background: url('./pictures/cover.webp') no-repeat center center; /* 设置背景图片 */
-        background-size: cover; /* 让背景图片覆盖整个页面 */
-      }
-      h1 {
-        position: absolute;
-        top: 20px;
-        font-size: 64px; /* 字体更大 */
-        font-family: 'Times New Roman', Times, serif;
-        transform: scaleX(1.2);
-        color: #f5f5f5; /* 深一点的白色 */
-        text-shadow: 3px 3px 7px rgba(0, 0, 0, 0.9); /* 加强阴影效果 */
-        margin: 0;
-      }
-      .button-container {
-        display: flex;
-        justify-content: center;
-        gap: 40px; /* 按钮间距 */
-        margin-top: 20px;
-      }
-      button {
-        padding: 7px 50px; /* 增加按钮内边距 */
-        font-size: 28px; /* 调整字体大小 */
-        font-weight: bold; /* 加粗字体 */
-        color: white; /* 白色字体 */
-        background-color: #1567e1; /* 设置按钮透明背景 */
-        border: 4px solid white; /* 更粗的白色边框 */
-        border-radius: 15px; /* 更大的圆角 */
-        cursor: pointer;
-        transition: all 0.3s;
-        width: 240px; /* 固定宽度确保大小一致 */
-        height: 80px; /* 固定高度确保视觉一致 */
-        text-align: center; /* 文字居中 */
-      }
-      button:hover {
-        background-color: rgba(8, 40, 88, 0.9); /* 鼠标悬停时背景半透明 */
-        border-color: rgba(255, 255, 255, 0.8); /* 鼠标悬停时边框稍微淡化 */
-      }
-    </style>
-    <script type="module" crossorigin src="/acg-wu-xiao/assets/main-DSbvsmcS.js"></script>
-    <link rel="modulepreload" crossorigin href="/acg-wu-xiao/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  </head>
-  <body>
-    <!-- 游戏标题 -->
-    <h1>Pathcrafters: A Journey Together</h1>
+<head>
+  <meta charset="utf-8">
+  <title>Pathcrafters: A Journey Together</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: url('./pictures/cover.webp') no-repeat center center;
+      background-size: cover;
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    }
 
-    <!-- 按钮容器 -->
-    <div class="button-container">
-      <button id="startButton">Start Game</button>
-      <button id="switchCharacterButton">Switch Character</button>
+    h1 {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 80px; /* 缩小字体以适应一行 */
+      color: #f5f5f5;
+      text-shadow: 3px 3px 7px rgba(0, 0, 0, 0.9);
+      margin: 0;
+      white-space: nowrap; /* 防止标题换行 */
+    }
+
+    .menu-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      margin-top: 100px;
+    }
+
+    .menu-button {
+      width: 300px;
+      height: 60px;
+      background: rgba(200, 200, 200, 0.5);
+      border: none;
+      border-radius: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #000;
+      text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .menu-button:hover {
+      background: rgba(220, 220, 220, 0.7);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: #5e5d5d;
+      color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      position: relative;
+      max-width: 800px;
+      width: 90%;
+      text-align: left;
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      font-size: 36px;
+      color: #ffc400; /* Golden title */
+    }
+
+    .modal-content ol li {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .modal-buttons button {
+      padding: 10px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #555;
+      color: #fff;
+      transition: background 0.3s;
+    }
+
+    .modal-buttons button:hover {
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Music (Looped) -->
+  <audio id="backgroundMusic" loop autoplay>
+    <source src="./audio/Menu Background.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
+  <h1>Pathcrafters: A Journey Together</h1>
+
+  <div class="menu-container" id="mainMenu">
+    <button class="menu-button" id="startGameBtn">Start Game</button>
+    <button class="menu-button" id="gameRulesBtn">Game Rules</button>
+    <button class="menu-button" id="controlsGuideBtn">Controls Guide</button>
+    <button class="menu-button" id="characterSwitchBtn">Character Switch</button>
+  </div>
+
+  <!-- Game rules modal -->
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal-content">
+      <h2>Game Rules</h2>
+      <ol>
+        <li>Reach the Destination: Players must compete to reach the destination on the map first while stopping others from doing so.</li>
+        <li>Modify the Map: Each round, players can place one randomly generated item on the map to change the terrain.</li>
+        <li>Earn Points: The fewer players that reach the destination, the more points you earn. Arriving faster increases your points.</li>
+        <li>Avoid Obstacles: Some obstacles are deadly, while others are safe to walk on. Plan your path carefully.</li>
+        <li>Stay on the Ground: Falling off the map results in losing the round. Be cautious with your movements.</li>
+      </ol>
+      <div class="modal-buttons">
+        <button id="closeRulesBtn">Close</button>
+      </div>
     </div>
+  </div>
 
+  <script>
+    // Set the volume of the background music to 50%
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    backgroundMusic.volume = 0.3;  // Adjust this value (0.0 to 1.0) to change the volume
+    const startGameBtn = document.getElementById('startGameBtn');
+    const gameRulesBtn = document.getElementById('gameRulesBtn');
+    const controlsGuideBtn = document.getElementById('controlsGuideBtn');
+    const rulesModal = document.getElementById('rulesModal');
+    const closeRulesBtn = document.getElementById('closeRulesBtn');
+    const characterSwitchBtn = document.getElementById('characterSwitchBtn');
 
-  </body>
+    // 取消静音并播放（需要用户交互）
+    document.addEventListener('click', () => {
+      backgroundMusic.muted = false; // 取消静音
+      backgroundMusic.play();
+    });
+
+    // Function to play click sound
+    function playClickSound() {
+      const audio = new Audio('./audio/click.mp3');
+      audio.play();
+    }
+
+    // Delay function
+    function delayAction(callback, delay = 400) {
+      setTimeout(callback, delay);
+    }
+
+    // Start Game button click handler
+    startGameBtn.addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      delayAction(() => {
+        let defaultCharacter1 = localStorage.getItem('selectedCharacter1') || 'Exo Gray.fbx';
+        let defaultCharacter2 = localStorage.getItem('selectedCharacter2') || 'Megan.fbx';
+        if (!localStorage.getItem('selectedCharacter1')) {
+          localStorage.setItem('selectedCharacter1', defaultCharacter1);
+        }
+        if (!localStorage.getItem('selectedCharacter2')) {
+          localStorage.setItem('selectedCharacter2', defaultCharacter2);
+        }
+        window.location.href = 'game.html';
+      }, 800);
+    });
+
+    // Game Rules button click handler
+    gameRulesBtn.addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      delayAction(() => {
+        rulesModal.style.display = 'flex';
+      });
+    });
+
+    // Close Rules button click handler
+    closeRulesBtn.addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      delayAction(() => {
+        rulesModal.style.display = 'none';
+      });
+    });
+
+    // Controls Guide button click handler
+    controlsGuideBtn.addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      delayAction(() => {
+        alert('Here is the controls guide...');
+      });
+    });
+
+    // Character Switch button click handler
+    characterSwitchBtn.addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      delayAction(() => {
+        window.location.href = 'character1.html';
+      });
+    });
+  </script>
+</body>
 </html>

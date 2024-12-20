@@ -1,1 +1,0 @@
-import"./modulepreload-polyfill-B5Qt9EMX.js";const t=document.getElementById("startButton"),e=document.getElementById("switchCharacterButton");t.addEventListener("click",()=>{window.location.href="game.html"});e.addEventListener("click",()=>{window.location.href="character_switch.html"});

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Player 2 Custom Characters!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
+      background: url('./pictures/cover.webp') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    h2 {
+      font-size: 60px;
+      color: #ffc400;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.9);
+      margin: 0 0 50px 0;
+    }
+
+    .character-switch-list {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 100px;
+      margin-bottom: 50px;
+    }
+
+    .character-switch-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .character-switch-option img {
+      width: 190px;
+      height: auto;
+      transition: transform 0.3s;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+    }
+
+    .character-switch-option:hover img {
+      transform: scale(1.1);
+    }
+
+    .character-switch-option span {
+      margin-top: 15px;
+      font-size: 28px;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .character-switch-tooltip {
+      display: none;
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      width: 250px;
+      font-size: 20px;
+      text-align: center;
+      pointer-events: none;
+      line-height: 1.4;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .character-switch-option:hover .character-switch-tooltip {
+      display: block;
+    }
+
+    .character-switch-buttons {
+      display: flex;
+      justify-content: space-around;
+      width: 400px;
+      margin-top: 20px;
+    }
+
+    .character-switch-buttons button {
+      padding: 15px 30px;
+      font-size: 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.8);
+      color: #000;
+      transition: background 0.3s;
+      font-weight: bold;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .character-switch-buttons button:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .character-switch-option.selected span {
+      color: #0f0;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <h2>Player 2 Custom Characters!</h2>
+
+  <div class="character-switch-list">
+    <!-- Megan -->
+    <div class="character-switch-option" data-char="Megan" data-fbx="Megan.fbx">
+      <img src="pictures/Megan.png" alt="Megan" />
+      <span>Megan</span>
+      <div class="character-switch-tooltip">Megan: Agile and quick.</div>
+    </div>
+
+    <!-- Erika Archer -->
+    <div class="character-switch-option" data-char="Erika Archer" data-fbx="Erika Archer.fbx">
+      <img src="pictures/Erika Archer.png" alt="Erika Archer" />
+      <span>Erika Archer</span>
+      <div class="character-switch-tooltip">Erika Archer: Skilled with bow and arrow.</div>
+    </div>
+  </div>
+
+  <div class="character-switch-buttons">
+    <button id="chooseCharacterBtn">Choose</button>
+    <button id="backCharacterBtn">Back</button>
+  </div>
+
+  <!-- Audio element -->
+  <audio id="buttonClickSound" src="audio/click.mp3" preload="auto"></audio>
+
+  <script>
+    let selectedFbx = null;
+
+    // Play sound function
+    function playClickSound() {
+      const buttonClickSound = document.getElementById('buttonClickSound');
+      if (buttonClickSound) {
+        buttonClickSound.currentTime = 0;
+        buttonClickSound.play().catch((error) => {
+          console.error("音频播放失败:", error);
+        });
+      }
+    }
+
+    // Initialize default selection to Megan
+    window.onload = () => {
+      const defaultOption = document.querySelector('.character-switch-option[data-char="Megan"]');
+      if (defaultOption) {
+        defaultOption.classList.add('selected');
+        defaultOption.querySelector('span').style.color = '#0f0';
+        selectedFbx = defaultOption.getAttribute('data-fbx');
+      }
+    };
+
+    // Handle character selection
+    document.querySelectorAll('.character-switch-option').forEach(option => {
+      option.addEventListener('click', () => {
+        playClickSound(); // Play sound on character selection
+        document.querySelectorAll('.character-switch-option').forEach(o => {
+          o.classList.remove('selected');
+          o.querySelector('span').style.color = '#fff';
+        });
+        option.classList.add('selected');
+        option.querySelector('span').style.color = '#0f0';
+        selectedFbx = option.getAttribute('data-fbx');
+      });
+    });
+
+    // Click Choose button
+    document.getElementById('chooseCharacterBtn').addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      setTimeout(() => {
+        if (!selectedFbx) {
+          // If no selection, default to Megan
+          selectedFbx = 'Megan.fbx';
+        }
+        // Save Player 2's character to localStorage
+        localStorage.setItem('selectedCharacter2', selectedFbx);
+        // Navigate to main menu
+        window.location.href = 'index.html';
+      }, 800); // 800ms delay
+    });
+
+    // Click Back button
+    document.getElementById('backCharacterBtn').addEventListener('click', () => {
+      playClickSound(); // Play sound on button click
+      setTimeout(() => {
+        window.location.href = 'character1.html';
+      }, 800); // 800ms delay
+    });
+  </script>
+</body>
+</html>
