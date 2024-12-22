@@ -23,11 +23,11 @@
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 80px; /* 缩小字体以适应一行 */
+      font-size: 80px;
       color: #f5f5f5;
       text-shadow: 3px 3px 7px rgba(0, 0, 0, 0.9);
       margin: 0;
-      white-space: nowrap; /* 防止标题换行 */
+      white-space: nowrap;
     }
 
     .menu-container {
@@ -47,7 +47,7 @@
       font-size: 28px;
       font-weight: bold;
       color: #000;
-      text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
+      text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
       cursor: pointer;
       transition: background 0.3s, color 0.3s;
     }
@@ -62,14 +62,14 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 999;
     }
 
-    .modal-content {
+    .modal-content.rules {
       background: #5e5d5d;
       color: #fff;
       padding: 30px;
@@ -81,10 +81,23 @@
       font-family: 'Comic Sans MS', 'Arial', sans-serif;
     }
 
-    .modal-content h2 {
+    .modal-content.max-round {
+      background: #5e5d5d;
+      color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      position: relative;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    }
+
+    .modal-content.max-round h2 {
       margin-top: 0;
       font-size: 36px;
-      color: #ffc400; /* Golden title */
+      color: #ffc400;
+      white-space: nowrap;
     }
 
     .modal-content ol li {
@@ -107,15 +120,27 @@
       background: #555;
       color: #fff;
       transition: background 0.3s;
+      margin: 0 10px;
     }
 
     .modal-buttons button:hover {
       background: #444;
     }
+
+    .input-field {
+      width: 200px;
+      height: 40px;
+      font-size: 20px;
+      margin: 20px 0;
+      padding: 5px;
+      background-color: #ddd;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <!-- Background Music (Looped) -->
   <audio id="backgroundMusic" loop autoplay>
     <source src="./audio/Menu Background.mp3" type="audio/mp3">
     Your browser does not support the audio element.
@@ -130,9 +155,19 @@
     <button class="menu-button" id="characterSwitchBtn">Character Switch</button>
   </div>
 
-  <!-- Game rules modal -->
+  <div class="modal-overlay" id="maxRoundModal">
+    <div class="modal-content max-round">
+      <h2>Maximum Number of Rounds</h2>
+      <input type="number" id="maxRoundInput" class="input-field" placeholder="Enter maxRound" min="1">
+      <div class="modal-buttons">
+        <button id="startGameWithMaxRound">Start</button>
+        <button id="backToMainMenu">Back</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="rulesModal">
-    <div class="modal-content">
+    <div class="modal-content rules">
       <h2>Game Rules</h2>
       <ol>
         <li>Reach the Destination: Players must compete to reach the destination on the map first while stopping others from doing so.</li>
@@ -148,37 +183,76 @@
   </div>
 
   <script>
-    // Set the volume of the background music to 50%
     const backgroundMusic = document.getElementById('backgroundMusic');
-    backgroundMusic.volume = 0.3;  // Adjust this value (0.0 to 1.0) to change the volume
+    backgroundMusic.volume = 0.3;
+
     const startGameBtn = document.getElementById('startGameBtn');
     const gameRulesBtn = document.getElementById('gameRulesBtn');
     const controlsGuideBtn = document.getElementById('controlsGuideBtn');
     const rulesModal = document.getElementById('rulesModal');
     const closeRulesBtn = document.getElementById('closeRulesBtn');
     const characterSwitchBtn = document.getElementById('characterSwitchBtn');
+    const maxRoundModal = document.getElementById('maxRoundModal');
+    const startGameWithMaxRound = document.getElementById('startGameWithMaxRound');
+    const backToMainMenu = document.getElementById('backToMainMenu');
+    const maxRoundInput = document.getElementById('maxRoundInput');
 
-    // 取消静音并播放（需要用户交互）
     document.addEventListener('click', () => {
-      backgroundMusic.muted = false; // 取消静音
+      backgroundMusic.muted = false;
       backgroundMusic.play();
-    });
+    }, { once: true });
 
-    // Function to play click sound
     function playClickSound() {
       const audio = new Audio('./audio/click.mp3');
       audio.play();
     }
 
-    // Delay function
     function delayAction(callback, delay = 400) {
       setTimeout(callback, delay);
     }
 
-    // Start Game button click handler
     startGameBtn.addEventListener('click', () => {
-      playClickSound(); // Play sound on button click
+      playClickSound();
       delayAction(() => {
+        maxRoundModal.style.display = 'flex';
+      }, 800);
+    });
+
+    gameRulesBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        rulesModal.style.display = 'flex';
+      }, 400);
+    });
+
+    closeRulesBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        rulesModal.style.display = 'none';
+      }, 400);
+    });
+
+    controlsGuideBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        alert('Here is the controls guide...');
+      }, 400);
+    });
+
+    characterSwitchBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        window.location.href = 'character1.html';
+      }, 400);
+    });
+
+    startGameWithMaxRound.addEventListener('click', () => {
+      playClickSound();
+      const maxRoundValue = parseInt(maxRoundInput.value);
+      if (isNaN(maxRoundValue) || maxRoundValue <= 0) {
+        alert("Please enter a valid maxRound (positive number)!");
+      } else {
+        localStorage.setItem('maxRound', maxRoundValue);
         let defaultCharacter1 = localStorage.getItem('selectedCharacter1') || 'Exo Gray.fbx';
         let defaultCharacter2 = localStorage.getItem('selectedCharacter2') || 'Megan.fbx';
         if (!localStorage.getItem('selectedCharacter1')) {
@@ -188,39 +262,14 @@
           localStorage.setItem('selectedCharacter2', defaultCharacter2);
         }
         window.location.href = 'game.html';
-      }, 800);
+      }
     });
 
-    // Game Rules button click handler
-    gameRulesBtn.addEventListener('click', () => {
-      playClickSound(); // Play sound on button click
+    backToMainMenu.addEventListener('click', () => {
+      playClickSound();
       delayAction(() => {
-        rulesModal.style.display = 'flex';
-      });
-    });
-
-    // Close Rules button click handler
-    closeRulesBtn.addEventListener('click', () => {
-      playClickSound(); // Play sound on button click
-      delayAction(() => {
-        rulesModal.style.display = 'none';
-      });
-    });
-
-    // Controls Guide button click handler
-    controlsGuideBtn.addEventListener('click', () => {
-      playClickSound(); // Play sound on button click
-      delayAction(() => {
-        alert('Here is the controls guide...');
-      });
-    });
-
-    // Character Switch button click handler
-    characterSwitchBtn.addEventListener('click', () => {
-      playClickSound(); // Play sound on button click
-      delayAction(() => {
-        window.location.href = 'character1.html';
-      });
+        maxRoundModal.style.display = 'none';
+      }, 400);
     });
   </script>
 </body>
