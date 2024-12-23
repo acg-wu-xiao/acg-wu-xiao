@@ -69,40 +69,83 @@
       z-index: 999;
     }
 
-    .modal-content.rules {
+    .modal-content {
       background: #5e5d5d;
       color: #fff;
       padding: 30px;
       border-radius: 10px;
       position: relative;
+      width: 90%;
       max-width: 800px;
-      width: 90%;
-      text-align: left;
-      font-family: 'Comic Sans MS', 'Arial', sans-serif;
-    }
-
-    .modal-content.max-round {
-      background: #5e5d5d;
-      color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      position: relative;
-      max-width: 500px;
-      width: 90%;
       text-align: center;
       font-family: 'Comic Sans MS', 'Arial', sans-serif;
     }
 
+    /* -------------- 回合数弹窗 -------------- */
+    .modal-content.max-round {
+      max-width: 500px;
+    }
     .modal-content.max-round h2 {
       margin-top: 0;
       font-size: 36px;
-      color: #ffc400;
+      color: #ffc400; /* 金色 */
       white-space: nowrap;
     }
 
-    .modal-content ol li {
+    /* -------------- 难度选择弹窗 -------------- */
+    .modal-content.difficulty-selection {
+      max-width: 500px;
+    }
+    .modal-content.difficulty-selection h2 {
+      margin-top: 0;
+      font-size: 36px;
+      color: #ffc400; /* 金色 */
+      white-space: nowrap;
+    }
+
+    /* 难度选项容器：水平排列 */
+    .difficulty-options {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin: 20px 0;
+    }
+
+    /* 单个难度选项的容器 */
+    .difficulty-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* 自定义radio样式，让它更吸引人 */
+    .difficulty-option input[type="radio"] {
+      appearance: none; /* 隐藏默认radio外观 */
+      -webkit-appearance: none;
+      background-color: #ccc;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.3s;
+      position: relative;
+    }
+    .difficulty-option input[type="radio"]:hover {
+      background-color: #eee;
+    }
+    .difficulty-option input[type="radio"]:checked {
+      background-color: #ffc400; /* 选中后呈现金色 */
+    }
+
+    /* -------------- 其它通用样式 -------------- */
+    .modal-content.guides ol li {
       font-size: 20px;
       margin-bottom: 10px;
+      text-align: left;
     }
 
     .modal-buttons {
@@ -150,25 +193,54 @@
 
   <div class="menu-container" id="mainMenu">
     <button class="menu-button" id="startGameBtn">Start Game</button>
-    <button class="menu-button" id="gameRulesBtn">Game Rules</button>
-    <button class="menu-button" id="controlsGuideBtn">Controls Guide</button>
+    <!-- 将“Game Rules”改为“Guides” -->
+    <button class="menu-button" id="guidesBtn">Guides</button>
+    <!-- 移除“Controls Guide”按钮 -->
     <button class="menu-button" id="characterSwitchBtn">Character Switch</button>
   </div>
 
+  <!-- --------------- 回合数设置弹窗 --------------- -->
   <div class="modal-overlay" id="maxRoundModal">
     <div class="modal-content max-round">
       <h2>Maximum Number of Rounds</h2>
       <input type="number" id="maxRoundInput" class="input-field" placeholder="Enter maxRound" min="1">
       <div class="modal-buttons">
-        <button id="startGameWithMaxRound">Start</button>
+        <button id="nextStepBtn">Next</button>
         <button id="backToMainMenu">Back</button>
       </div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="rulesModal">
-    <div class="modal-content rules">
-      <h2>Game Rules</h2>
+  <!-- --------------- 难度选择弹窗 --------------- -->
+  <div class="modal-overlay" id="difficultyModal">
+    <div class="modal-content difficulty-selection">
+      <h2>Select Difficulty</h2>
+      <div class="difficulty-options">
+        <label class="difficulty-option">
+          <input type="radio" name="difficulty" value="1">
+          <span>Easy</span>
+        </label>
+        <label class="difficulty-option">
+          <input type="radio" name="difficulty" value="2">
+          <span>Medium</span>
+        </label>
+        <label class="difficulty-option">
+          <input type="radio" name="difficulty" value="3">
+          <span>Hard</span>
+        </label>
+      </div>
+      <div class="modal-buttons">
+        <button id="startGameBtnFinal">Start</button>
+        <button id="backToMaxRound">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- --------------- Guides 弹窗 --------------- -->
+  <div class="modal-overlay" id="guidesModal">
+    <div class="modal-content guides">
+      <!-- 将标题更改为 Guides，金色，字体更大 -->
+      <h2 style="color: #ffc400; font-size: 40px;">Guides</h2>
       <ol>
         <li>Reach the Destination: Players must compete to reach the destination on the map first while stopping others from doing so.</li>
         <li>Modify the Map: Each round, players can place one randomly generated item on the map to change the terrain.</li>
@@ -177,7 +249,7 @@
         <li>Stay on the Ground: Falling off the map results in losing the round. Be cautious with your movements.</li>
       </ol>
       <div class="modal-buttons">
-        <button id="closeRulesBtn">Close</button>
+        <button id="closeGuidesBtn">Close</button>
       </div>
     </div>
   </div>
@@ -186,16 +258,25 @@
     const backgroundMusic = document.getElementById('backgroundMusic');
     backgroundMusic.volume = 0.3;
 
+    // 主要按钮
     const startGameBtn = document.getElementById('startGameBtn');
-    const gameRulesBtn = document.getElementById('gameRulesBtn');
-    const controlsGuideBtn = document.getElementById('controlsGuideBtn');
-    const rulesModal = document.getElementById('rulesModal');
-    const closeRulesBtn = document.getElementById('closeRulesBtn');
+    const guidesBtn = document.getElementById('guidesBtn');
     const characterSwitchBtn = document.getElementById('characterSwitchBtn');
+
+    // 回合数弹窗
     const maxRoundModal = document.getElementById('maxRoundModal');
-    const startGameWithMaxRound = document.getElementById('startGameWithMaxRound');
+    const nextStepBtn = document.getElementById('nextStepBtn');
     const backToMainMenu = document.getElementById('backToMainMenu');
     const maxRoundInput = document.getElementById('maxRoundInput');
+
+    // 难度选择弹窗
+    const difficultyModal = document.getElementById('difficultyModal');
+    const startGameBtnFinal = document.getElementById('startGameBtnFinal');
+    const backToMaxRound = document.getElementById('backToMaxRound');
+
+    // Guides 弹窗
+    const guidesModal = document.getElementById('guidesModal');
+    const closeGuidesBtn = document.getElementById('closeGuidesBtn');
 
     document.addEventListener('click', () => {
       backgroundMusic.muted = false;
@@ -211,6 +292,7 @@
       setTimeout(callback, delay);
     }
 
+    // 点击“Start Game”时，先弹出最大回合数设置弹窗
     startGameBtn.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -218,41 +300,17 @@
       }, 800);
     });
 
-    gameRulesBtn.addEventListener('click', () => {
-      playClickSound();
-      delayAction(() => {
-        rulesModal.style.display = 'flex';
-      }, 400);
-    });
-
-    closeRulesBtn.addEventListener('click', () => {
-      playClickSound();
-      delayAction(() => {
-        rulesModal.style.display = 'none';
-      }, 400);
-    });
-
-    controlsGuideBtn.addEventListener('click', () => {
-      playClickSound();
-      delayAction(() => {
-        alert('Here is the controls guide...');
-      }, 400);
-    });
-
-    characterSwitchBtn.addEventListener('click', () => {
-      playClickSound();
-      delayAction(() => {
-        window.location.href = 'character1.html';
-      }, 400);
-    });
-
-    startGameWithMaxRound.addEventListener('click', () => {
+    // “Next”按钮：检查并保存 maxRound，然后进入难度选择
+    nextStepBtn.addEventListener('click', () => {
       playClickSound();
       const maxRoundValue = parseInt(maxRoundInput.value);
       if (isNaN(maxRoundValue) || maxRoundValue <= 0) {
         alert("Please enter a valid maxRound (positive number)!");
       } else {
+        // 储存最大回合数
         localStorage.setItem('maxRound', maxRoundValue);
+
+        // 如果未选择角色，就给定默认角色
         let defaultCharacter1 = localStorage.getItem('selectedCharacter1') || 'Exo Gray.fbx';
         let defaultCharacter2 = localStorage.getItem('selectedCharacter2') || 'Megan.fbx';
         if (!localStorage.getItem('selectedCharacter1')) {
@@ -261,14 +319,67 @@
         if (!localStorage.getItem('selectedCharacter2')) {
           localStorage.setItem('selectedCharacter2', defaultCharacter2);
         }
-        window.location.href = 'game.html';
+
+        // 隐藏回合数弹窗，显示难度选择弹窗
+        maxRoundModal.style.display = 'none';
+        difficultyModal.style.display = 'flex';
       }
     });
 
+    // 在难度弹窗点击 “Start” 后，若未选则默认 2（Medium），然后进入游戏
+    startGameBtnFinal.addEventListener('click', () => {
+      playClickSound();
+      // 获取所有难度选项
+      const difficultyRadios = document.getElementsByName('difficulty');
+      let selectedDifficulty = 2; // 默认中等
+      for (const radio of difficultyRadios) {
+        if (radio.checked) {
+          selectedDifficulty = parseInt(radio.value);
+          break;
+        }
+      }
+      localStorage.setItem('difficulty', selectedDifficulty);
+      // 进入游戏
+      window.location.href = 'game.html';
+    });
+
+    // 点击“Back”返回回合数弹窗
+    backToMaxRound.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        difficultyModal.style.display = 'none';
+        maxRoundModal.style.display = 'flex';
+      }, 400);
+    });
+
+    // 点击“Back”返回主菜单
     backToMainMenu.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
         maxRoundModal.style.display = 'none';
+      }, 400);
+    });
+
+    // Guides 弹窗
+    guidesBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        guidesModal.style.display = 'flex';
+      }, 400);
+    });
+
+    closeGuidesBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        guidesModal.style.display = 'none';
+      }, 400);
+    });
+
+    // 角色切换
+    characterSwitchBtn.addEventListener('click', () => {
+      playClickSound();
+      delayAction(() => {
+        window.location.href = 'character1.html';
       }, 400);
     });
   </script>
