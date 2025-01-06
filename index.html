@@ -4,8 +4,42 @@
   <meta charset="utf-8">
   <title>Pathcrafters: A Journey Together</title>
   <style>
-    /* ------------------- Reset and Basic Styles ------------------- */
+    /* ------------------- 预加载容器（全屏遮罩） ------------------- */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('./pictures/cover.webp') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 60px;
+      color: #ffc400;
+      z-index: 9999; /* 保证在最上层 */
+      overflow: hidden; /* 确保没有溢出 */
+    }
 
+    #preloader::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5); /* 半透明黑色阴影 */
+      z-index: -1; /* 确保叠加层在文字背景后面 */
+    }
+
+
+    /* ------------------- 主体内容，默认隐藏 ------------------- */
+    #pageContent {
+      display: none; /* 等音乐播放成功后再显示 */
+    }
+
+    /* ------------------- 下面是原先的样式 ------------------- */
     * {
       box-sizing: border-box;
     }
@@ -25,8 +59,6 @@
       background-color: #000; /* Fallback background color */
     }
 
-    /* ------------------- Background Layer ------------------- */
-
     .background-layer {
       position: fixed;
       top: 0;
@@ -40,8 +72,6 @@
       z-index: -1;
     }
 
-    /* ------------------- Page Title ------------------- */
-
     h1 {
       position: absolute;
       top: 20px;
@@ -53,8 +83,6 @@
       margin: 0;
       white-space: nowrap;
     }
-
-    /* ------------------- Main Menu ------------------- */
 
     .menu-container {
       display: flex;
@@ -83,8 +111,6 @@
       background: rgba(220, 220, 220, 0.7);
     }
 
-    /* ------------------- Modal Styles ------------------- */
-
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -110,7 +136,6 @@
       font-family: 'Comic Sans MS', 'Arial', sans-serif;
     }
 
-    /* Specific Modal Styles */
     .modal-content.max-round {
       max-width: 500px;
     }
@@ -205,8 +230,6 @@
       text-align: center;
     }
 
-    /* ------------------- Brightness and Volume Sliders ------------------- */
-
     .control-slider {
       position: fixed;
       bottom: 20px;
@@ -214,10 +237,10 @@
       flex-direction: column;
       align-items: center;
       background: rgba(94, 93, 93, 0.8);
-      padding: 20px 25px; /* 增大 padding */
-      border-radius: 15px; /* 增大 border-radius */
+      padding: 20px 25px;
+      border-radius: 15px;
       z-index: 1001;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* 添加阴影 */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     }
 
     #brightnessControl {
@@ -229,18 +252,17 @@
     }
 
     .control-slider label {
-      font-size: 18px; /* 增大字体 */
+      font-size: 18px;
       color: #ffc400; /* Gold color */
-      margin-bottom: 10px; /* 增加 margin */
+      margin-bottom: 10px;
       font-weight: bold;
     }
 
     .control-slider input[type="range"] {
-      width: 200px; /* 增大滑块宽度 */
-      height: 10px; /* 增大滑块高度 */
+      width: 200px;
+      height: 10px;
     }
 
-    /* 更大滑块按钮 */
     .control-slider input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -251,7 +273,6 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     .control-slider input[type="range"]::-webkit-slider-thumb:hover {
       background: #45a049;
     }
@@ -264,12 +285,10 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     .control-slider input[type="range"]::-moz-range-thumb:hover {
       background: #45a049;
     }
 
-    /* Responsive Adjustments */
     @media (max-width: 600px) {
       .control-slider input[type="range"] {
         width: 150px;
@@ -290,106 +309,119 @@
   </style>
 </head>
 <body>
-  <!-- Background Layer -->
-  <div class="background-layer" id="backgroundLayer"></div>
-
-  <!-- Background Music -->
-  <audio id="backgroundMusic" loop autoplay>
-    <source src="./audio/Menu Background.mp3" type="audio/mp3">
-    Your browser does not support the audio element.
-  </audio>
-
-  <!-- Page Title -->
-  <h1>Pathcrafters: A Journey Together</h1>
-
-  <!-- Main Menu -->
-  <div class="menu-container" id="mainMenu">
-    <button class="menu-button" id="startGameBtn">Start Game</button>
-    <button class="menu-button" id="guidesBtn">Guides</button>
-    <button class="menu-button" id="characterSwitchBtn">Character Switch</button>
-    <!-- Removed Settings Button -->
+  <!-- 1. 预加载容器：默认显示 Loading... -->
+  <div id="preloader">
+    Loading...
   </div>
 
-  <!-- Maximum Rounds Modal -->
-  <div class="modal-overlay" id="maxRoundModal">
-    <div class="modal-content max-round">
-      <h2>Maximum Number of Rounds</h2>
-      <input type="number" id="maxRoundInput" class="input-field" placeholder="Enter maxRound" min="1">
-      <div class="modal-buttons">
-        <button id="nextStepBtn">Next</button>
-        <button id="backToMainMenu">Back</button>
+  <!-- 2. 主体内容容器：默认不显示，音乐播放成功后再显示 -->
+  <div id="pageContent">
+    <!-- ========== 以下为原先的 index.html 结构 ========== -->
+
+    <!-- 背景层 -->
+    <div class="background-layer" id="backgroundLayer"></div>
+
+    <!-- 背景音乐 -->
+    <audio id="backgroundMusic" loop autoplay>
+      <source src="./audio/Menu Background.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
+
+    <!-- 页面标题 -->
+    <h1>Pathcrafters: A Journey Together</h1>
+
+    <!-- 主菜单 -->
+    <div class="menu-container" id="mainMenu">
+      <button class="menu-button" id="startGameBtn">Start Game</button>
+      <button class="menu-button" id="guidesBtn">Guides</button>
+      <button class="menu-button" id="characterSwitchBtn">Character Switch</button>
+    </div>
+
+    <!-- 最大回合数 Modal -->
+    <div class="modal-overlay" id="maxRoundModal">
+      <div class="modal-content max-round">
+        <h2>Maximum Number of Rounds</h2>
+        <input type="number" id="maxRoundInput" class="input-field" placeholder="Enter maxRound" min="1">
+        <div class="modal-buttons">
+          <button id="nextStepBtn">Next</button>
+          <button id="backToMainMenu">Back</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Difficulty Selection Modal -->
-  <div class="modal-overlay" id="difficultyModal">
-    <div class="modal-content difficulty-selection">
-      <h2>Select Difficulty</h2>
-      <div class="difficulty-options">
-        <label class="difficulty-option">
-          <input type="radio" name="difficulty" value="1">
-          <span>Easy</span>
-        </label>
-        <label class="difficulty-option">
-          <input type="radio" name="difficulty" value="2" checked>
-          <span>Medium</span>
-        </label>
-        <label class="difficulty-option">
-          <input type="radio" name="difficulty" value="3">
-          <span>Hard</span>
-        </label>
-      </div>
-      <div class="modal-buttons">
-        <button id="startGameBtnFinal">Start</button>
-        <button id="backToMaxRound">Back</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Guides Modal -->
-  <div class="modal-overlay" id="guidesModal">
-    <div class="modal-content guides">
-      <h2 style="color: #ffc400; font-size: 40px;">Guides</h2>
-      <ol>
-        <li>Game Goal: Players must compete to reach the green destination on the map first while stopping the other one from doing so.</li>
-        <li>Modify the Map: Each round, players can place one item on the map to change the terrain.</li>
-        <li>Avoid Obstacles: Some obstacles are deadly, while others are safe to walk on. Plan your path carefully.</li>
-        <li>Earn Points: The player that reaches the destination will earn one point. The player that dies will give one point to its rival.</li>
-        <li>Player 1 use <code>W</code>, <code>A</code>, <code>D</code> to control the character, and Player 2 use <code>↑</code>, <code>←</code>, <code>→</code> to control the character.</li>
-      </ol>
-      <div class="modal-buttons">
-        <button id="closeGuidesBtn">Close</button>
+    <!-- 难度选择 Modal -->
+    <div class="modal-overlay" id="difficultyModal">
+      <div class="modal-content difficulty-selection">
+        <h2>Select Difficulty</h2>
+        <div class="difficulty-options">
+          <label class="difficulty-option">
+            <input type="radio" name="difficulty" value="1">
+            <span>Easy</span>
+          </label>
+          <label class="difficulty-option">
+            <input type="radio" name="difficulty" value="2" checked>
+            <span>Medium</span>
+          </label>
+          <label class="difficulty-option">
+            <input type="radio" name="difficulty" value="3">
+            <span>Hard</span>
+          </label>
+        </div>
+        <div class="modal-buttons">
+          <button id="startGameBtnFinal">Start</button>
+          <button id="backToMaxRound">Back</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Brightness Control Slider -->
-  <div class="control-slider" id="brightnessControl">
-    <label for="brightnessSlider">Brightness</label>
-    <input type="range" id="brightnessSlider" min="50" max="150" value="100">
-    <span id="brightnessValue" style="margin-top: 5px; color: #ffc400; font-size: 16px;">100%</span>
-  </div>
+    <!-- 游戏指南 Modal -->
+    <div class="modal-overlay" id="guidesModal">
+      <div class="modal-content guides">
+        <h2 style="color: #ffc400; font-size: 40px;">Guides</h2>
+        <ol>
+          <li>Game Goal: Players must compete to reach the green destination on the map first while stopping the other one from doing so.</li>
+          <li>Modify the Map: Each round, players can place one item on the map to change the terrain.</li>
+          <li>Avoid Obstacles: Some obstacles are deadly, while others are safe to walk on. Plan your path carefully.</li>
+          <li>Earn Points: The player that reaches the destination will earn one point. The player that dies will give one point to its rival.</li>
+          <li>Player 1 use <code>W</code>, <code>A</code>, <code>D</code> to control the character, and Player 2 use <code>↑</code>, <code>←</code>, <code>→</code> to control the character.</li>
+        </ol>
+        <div class="modal-buttons">
+          <button id="closeGuidesBtn">Close</button>
+        </div>
+      </div>
+    </div>
 
-  <!-- Volume Control Slider -->
-  <div class="control-slider" id="volumeControl">
-    <label for="volumeSlider">Volume</label>
-    <input type="range" id="volumeSlider" min="0" max="100" value="50">
-    <span id="volumeValue" style="margin-top: 5px; color: #ffc400; font-size: 16px;">50%</span>
+    <!-- 亮度控制 Slider -->
+    <div class="control-slider" id="brightnessControl" style="left: 20px;">
+      <label for="brightnessSlider">Brightness</label>
+      <input type="range" id="brightnessSlider" min="50" max="150" value="100">
+      <span id="brightnessValue" style="margin-top: 5px; color: #ffc400; font-size: 16px;">100%</span>
+    </div>
+
+    <!-- 音量控制 Slider -->
+    <div class="control-slider" id="volumeControl" style="right: 20px;">
+      <label for="volumeSlider">Volume</label>
+      <input type="range" id="volumeSlider" min="0" max="100" value="50">
+      <span id="volumeValue" style="margin-top: 5px; color: #ffc400; font-size: 16px;">50%</span>
+    </div>
+
   </div>
 
   <script>
-    // Audio Element
+    // 预加载容器和页面内容容器
+    const preloader = document.getElementById('preloader');
+    const pageContent = document.getElementById('pageContent');
+
+    // 音乐元素
     const backgroundMusic = document.getElementById('backgroundMusic');
-    // Set initial volume from localStorage or default to 0.5
+    // 初始化音量（若localStorage里有保存过，就读取；否则默认0.5）
     backgroundMusic.volume = parseFloat(localStorage.getItem('musicVolume')) || 0.5;
 
-    // Main Menu Buttons
+    // 其余按钮、Modal相关
     const startGameBtn = document.getElementById('startGameBtn');
     const guidesBtn = document.getElementById('guidesBtn');
     const characterSwitchBtn = document.getElementById('characterSwitchBtn');
 
-    // Modal Elements
     const maxRoundModal = document.getElementById('maxRoundModal');
     const nextStepBtn = document.getElementById('nextStepBtn');
     const backToMainMenu = document.getElementById('backToMainMenu');
@@ -402,7 +434,6 @@
     const guidesModal = document.getElementById('guidesModal');
     const closeGuidesBtn = document.getElementById('closeGuidesBtn');
 
-    // Brightness and Volume Controls
     const brightnessSlider = document.getElementById('brightnessSlider');
     const volumeSlider = document.getElementById('volumeSlider');
 
@@ -411,27 +442,51 @@
 
     const backgroundLayer = document.getElementById('backgroundLayer');
 
-    // Function to Play Click Sound
+    // 用于播放“点击”音效的函数
     function playClickSound() {
       const audio = new Audio('./audio/click.mp3');
-      audio.volume = parseFloat(localStorage.getItem('clickVolume')) || 1.0; // Optional: Handle click sound volume
+      audio.volume = parseFloat(localStorage.getItem('clickVolume')) || 1.0;
       audio.play();
     }
 
-    // Function to Delay Actions
+    // 延时执行
     function delayAction(callback, delay = 400) {
       setTimeout(callback, delay);
     }
 
-    // Remove the following event listener to allow background music to play automatically
-    // document.addEventListener('click', () => {
-    //   backgroundMusic.muted = false;
-    //   backgroundMusic.play().catch((error) => {
-    //     console.error("Background music failed to play:", error);
-    //   });
-    // }, { once: true });
+    // 页面加载后尝试播放音乐
+    window.addEventListener('load', () => {
+      backgroundMusic.play()
+        .then(() => {
+          // 如果能正常播放，说明自动播放未被阻拦
+          console.log('Background music is playing.');
+          // 隐藏预加载容器
+          preloader.style.display = 'none';
+          // 显示页面内容
+          pageContent.style.display = 'block';
+        })
+        .catch((error) => {
+          // 如果浏览器阻止了自动播放
+          console.warn('Background music auto-play was blocked:', error);
+          // 修改文本提示用户点击
+          preloader.textContent = 'Click anywhere to continue...';
+          // 用户点击后再尝试一次播放
+          preloader.addEventListener('click', function handleClick() {
+            backgroundMusic.play()
+              .then(() => {
+                preloader.style.display = 'none';
+                pageContent.style.display = 'block';
+              })
+              .catch(err => {
+                console.error('Still cannot play music:', err);
+              });
+            // 只执行一次
+            preloader.removeEventListener('click', handleClick);
+          });
+        });
+    });
 
-    // Start Game Button Click
+    // Start Game按钮
     startGameBtn.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -439,17 +494,16 @@
       }, 800);
     });
 
-    // Next Button in Max Round Modal
+    // Max Round Modal：Next
     nextStepBtn.addEventListener('click', () => {
       playClickSound();
       const maxRoundValue = parseInt(maxRoundInput.value);
       if (isNaN(maxRoundValue) || maxRoundValue <= 0) {
         alert("Please enter a valid maxRound (positive number)!");
       } else {
-        // Store Maximum Rounds
         localStorage.setItem('maxRound', maxRoundValue);
 
-        // Set Default Characters if Not Selected
+        // 如果角色没选过，设置默认角色
         let defaultCharacter1 = localStorage.getItem('selectedCharacter1') || 'Exo Gray.fbx';
         let defaultCharacter2 = localStorage.getItem('selectedCharacter2') || 'Megan.fbx';
         if (!localStorage.getItem('selectedCharacter1')) {
@@ -459,18 +513,17 @@
           localStorage.setItem('selectedCharacter2', defaultCharacter2);
         }
 
-        // Hide Max Round Modal and Show Difficulty Modal
+        // 隐藏 maxRoundModal，显示 difficultyModal
         maxRoundModal.style.display = 'none';
         difficultyModal.style.display = 'flex';
       }
     });
 
-    // Start Game Final Button Click
+    // Start Game (Final)
     startGameBtnFinal.addEventListener('click', () => {
       playClickSound();
-      // Get Selected Difficulty
       const difficultyRadios = document.getElementsByName('difficulty');
-      let selectedDifficulty = 2; // Default to Medium
+      let selectedDifficulty = 2; // 默认Medium
       for (const radio of difficultyRadios) {
         if (radio.checked) {
           selectedDifficulty = parseInt(radio.value);
@@ -478,11 +531,11 @@
         }
       }
       localStorage.setItem('difficulty', selectedDifficulty);
-      // Redirect to Game Page
+      // 跳转到游戏页面
       window.location.href = 'game.html';
     });
 
-    // Back to Max Round Modal
+    // Back到Max Round
     backToMaxRound.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -491,7 +544,7 @@
       }, 400);
     });
 
-    // Back to Main Menu from Max Round Modal
+    // Back到主菜单
     backToMainMenu.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -499,7 +552,7 @@
       }, 400);
     });
 
-    // Guides Button Click
+    // Guides按钮
     guidesBtn.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -507,7 +560,7 @@
       }, 400);
     });
 
-    // Close Guides Modal
+    // 关闭Guides Modal
     closeGuidesBtn.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -515,7 +568,7 @@
       }, 400);
     });
 
-    // Character Switch Button Click
+    // Character Switch按钮
     characterSwitchBtn.addEventListener('click', () => {
       playClickSound();
       delayAction(() => {
@@ -523,9 +576,7 @@
       }, 400);
     });
 
-    /* ------------------- Brightness and Volume Controls ------------------- */
-
-    // Brightness Slider Input
+    /* ------------------- 亮度与音量滑块 ------------------- */
     brightnessSlider.addEventListener('input', () => {
       const brightnessValue = brightnessSlider.value;
       backgroundLayer.style.filter = `brightness(${brightnessValue}%)`;
@@ -533,7 +584,6 @@
       brightnessValueDisplay.textContent = `${brightnessValue}%`;
     });
 
-    // Volume Slider Input
     volumeSlider.addEventListener('input', () => {
       const volumeValue = volumeSlider.value;
       backgroundMusic.volume = volumeValue / 100;
@@ -541,17 +591,15 @@
       volumeValueDisplay.textContent = `${volumeValue}%`;
     });
 
-    // Initialize Settings from localStorage
+    // DOMContentLoaded时初始化亮度和音量
     window.addEventListener('DOMContentLoaded', () => {
-      // Initialize Brightness
       const savedBrightness = localStorage.getItem('brightness') || '100';
       brightnessSlider.value = savedBrightness;
       backgroundLayer.style.filter = `brightness(${savedBrightness}%)`;
       brightnessValueDisplay.textContent = `${savedBrightness}%`;
 
-      // Initialize Volume
       const savedVolume = localStorage.getItem('musicVolume');
-      if (savedVolume !== null) { // Handle zero volume
+      if (savedVolume !== null) {
         volumeSlider.value = savedVolume * 100;
         backgroundMusic.volume = parseFloat(savedVolume);
         volumeValueDisplay.textContent = `${savedVolume * 100}%`;
