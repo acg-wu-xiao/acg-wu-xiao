@@ -5,8 +5,97 @@
     <title>Pathcrafters: A Journey Together</title>
     <style>
       body { margin: 0; }
+
+      /* 亮度和音量控制容器 */
+      .control-container {
+        position: fixed;
+        bottom: 20px;
+        display: flex;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      /* 亮度控制容器位于左下角 */
+      #brightnessControl {
+        left: 20px;
+      }
+
+      /* 音量控制容器位于右下角 */
+      #volumeControl {
+        right: 20px;
+      }
+
+      /* 滑块标签样式 */
+      .control-label {
+        margin-right: 10px;
+        font-family: Arial, sans-serif;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      /* 滑块样式 */
+      .control-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 150px;
+        height: 8px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity .2s;
+      }
+
+      .control-slider:hover {
+        opacity: 1;
+      }
+
+      /* 滑块轨道样式 */
+      .control-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .control-slider::-webkit-slider-thumb:hover {
+        background: #45a049;
+      }
+
+      .control-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .control-slider::-moz-range-thumb:hover {
+        background: #45a049;
+      }
+
+      /* 控制容器背景 */
+      .control-container .control-box {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px 15px;
+        border-radius: 10px;
+      }
+
+      /* 亮度和音量图标（可选） */
+      .control-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
     </style>
-    <script type="module" crossorigin src="/acg-wu-xiao/assets/game-Bne-2KOj.js"></script>
+    <script type="module" crossorigin src="/acg-wu-xiao/assets/game-DRoOO2lJ.js"></script>
   </head>
   <body>
     <!-- 添加背景音乐 -->
@@ -22,7 +111,7 @@
       const backgroundMusic = document.getElementById('gameBackgroundMusic');
 
       // 设置音量 (0.0 - 1.0, 例如 0.5 是 50%)
-      backgroundMusic.volume = 0.3;
+      backgroundMusic.volume = parseFloat(localStorage.getItem('musicVolume')) || 0.5;
 
       // 检查是否需要从其他页面恢复背景音乐的播放
       const isMusicPlaying = localStorage.getItem('gameMusicPlaying') === 'true';
@@ -40,6 +129,103 @@
           localStorage.setItem('gameMusicPlaying', 'true');
         } else {
           localStorage.setItem('gameMusicPlaying', 'false');
+        }
+      });
+
+      // 创建亮度控制滑块
+      const brightnessControl = document.createElement('div');
+      brightnessControl.id = 'brightnessControl';
+      brightnessControl.className = 'control-container';
+      
+      const brightnessBox = document.createElement('div');
+      brightnessBox.className = 'control-box';
+
+      // 亮度图标（可选）
+      /*
+      const brightnessIcon = document.createElement('img');
+      brightnessIcon.src = './icons/brightness.png'; // 确保图标路径正确
+      brightnessIcon.className = 'control-icon';
+      brightnessBox.appendChild(brightnessIcon);
+      */
+
+      const brightnessLabel = document.createElement('span');
+      brightnessLabel.className = 'control-label';
+      brightnessLabel.textContent = 'Brightness:';
+      brightnessBox.appendChild(brightnessLabel);
+
+      const brightnessSlider = document.createElement('input');
+      brightnessSlider.type = 'range';
+      brightnessSlider.min = '50';
+      brightnessSlider.max = '150';
+      brightnessSlider.value = localStorage.getItem('brightness') || '100';
+      brightnessSlider.className = 'control-slider';
+      brightnessBox.appendChild(brightnessSlider);
+
+      brightnessControl.appendChild(brightnessBox);
+      document.body.appendChild(brightnessControl);
+
+      // 创建音量控制滑块
+      const volumeControl = document.createElement('div');
+      volumeControl.id = 'volumeControl';
+      volumeControl.className = 'control-container';
+      
+      const volumeBox = document.createElement('div');
+      volumeBox.className = 'control-box';
+
+      // 音量图标（可选）
+      /*
+      const volumeIcon = document.createElement('img');
+      volumeIcon.src = './icons/volume.png'; // 确保图标路径正确
+      volumeIcon.className = 'control-icon';
+      volumeBox.appendChild(volumeIcon);
+      */
+
+      const volumeLabel = document.createElement('span');
+      volumeLabel.className = 'control-label';
+      volumeLabel.textContent = 'Volume:';
+      volumeBox.appendChild(volumeLabel);
+
+      const volumeSlider = document.createElement('input');
+      volumeSlider.type = 'range';
+      volumeSlider.min = '0';
+      volumeSlider.max = '100';
+      volumeSlider.value = (localStorage.getItem('musicVolume') ? localStorage.getItem('musicVolume') * 100 : '50');
+      volumeSlider.className = 'control-slider';
+      volumeBox.appendChild(volumeSlider);
+
+      volumeControl.appendChild(volumeBox);
+      document.body.appendChild(volumeControl);
+
+      // 亮度滑块事件监听器
+      brightnessSlider.addEventListener('input', () => {
+        const brightnessValue = brightnessSlider.value;
+        document.body.style.filter = `brightness(${brightnessValue}%)`;
+        localStorage.setItem('brightness', brightnessValue);
+      });
+
+      // 初始化亮度（避免首次加载时更改亮度）
+      window.addEventListener('load', () => {
+        const savedBrightness = localStorage.getItem('brightness') || '100';
+        brightnessSlider.value = savedBrightness;
+        document.body.style.filter = `brightness(${savedBrightness}%)`;
+      });
+
+      // 音量滑块事件监听器
+      volumeSlider.addEventListener('input', () => {
+        const volumeValue = volumeSlider.value;
+        backgroundMusic.volume = volumeValue / 100;
+        localStorage.setItem('musicVolume', volumeValue / 100);
+      });
+
+      // 初始化音量滑块
+      window.addEventListener('load', () => {
+        const savedVolume = localStorage.getItem('musicVolume');
+        if (savedVolume !== null) {
+          volumeSlider.value = savedVolume * 100;
+          backgroundMusic.volume = savedVolume;
+        } else {
+          volumeSlider.value = '50';
+          backgroundMusic.volume = 0.5;
         }
       });
     </script>
